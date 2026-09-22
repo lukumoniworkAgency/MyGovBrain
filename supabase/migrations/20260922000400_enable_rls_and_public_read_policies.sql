@@ -1,0 +1,21 @@
+alter table public.languages enable row level security;
+alter table public.states enable row level security;
+alter table public.districts enable row level security;
+alter table public.departments enable row level security;
+alter table public.service_categories enable row level security;
+alter table public.services enable row level security;
+alter table public.service_translations enable row level security;
+alter table public.document_types enable row level security;
+alter table public.service_documents enable row level security;
+alter table public.service_sources enable row level security;
+
+create policy "Public can read active languages" on public.languages for select to anon, authenticated using (status = 'active');
+create policy "Public can read active states" on public.states for select to anon, authenticated using (status = 'active');
+create policy "Public can read active districts" on public.districts for select to anon, authenticated using (status = 'active');
+create policy "Public can read active departments" on public.departments for select to anon, authenticated using (status = 'active');
+create policy "Public can read active service categories" on public.service_categories for select to anon, authenticated using (status = 'active');
+create policy "Public can read published services" on public.services for select to anon, authenticated using (status = 'published');
+create policy "Public can read published service translations" on public.service_translations for select to anon, authenticated using (exists (select 1 from public.services where services.id = service_translations.service_id and services.status = 'published'));
+create policy "Public can read document types used by published services" on public.document_types for select to anon, authenticated using (exists (select 1 from public.service_documents join public.services on services.id = service_documents.service_id where service_documents.document_type_id = document_types.id and services.status = 'published'));
+create policy "Public can read documents for published services" on public.service_documents for select to anon, authenticated using (exists (select 1 from public.services where services.id = service_documents.service_id and services.status = 'published'));
+create policy "Public can read verified sources" on public.service_sources for select to anon, authenticated using (status = 'verified' and exists (select 1 from public.services where services.id = service_sources.service_id and services.status = 'published'));
