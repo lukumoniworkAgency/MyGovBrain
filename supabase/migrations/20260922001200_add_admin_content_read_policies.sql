@@ -1,0 +1,10 @@
+create policy "Admins can read all services" on public.services for select to authenticated using (public.is_admin());
+create policy "Admins can read all service translations" on public.service_translations for select to authenticated using (public.is_admin());
+create policy "Admins can read all service documents" on public.service_documents for select to authenticated using (public.is_admin());
+create policy "Admins can read all service sources" on public.service_sources for select to authenticated using (public.is_admin());
+create policy "Admins can read all eligibility rules" on public.eligibility_rules for select to authenticated using (public.is_admin());
+create policy "Admins can read all eligibility translations" on public.eligibility_rules_translations for select to authenticated using (public.is_admin());
+create policy "Admins can read all categories" on public.service_categories for select to authenticated using (public.is_admin());
+create policy "Admins can read all departments" on public.departments for select to authenticated using (public.is_admin());
+create policy "Admins can read all states" on public.states for select to authenticated using (public.is_admin());
+create policy "Admins can read all document types" on public.document_types for select to authenticated using (public.is_admin());

@@ -15,7 +15,16 @@ export async function createSupabaseServerClient() {
       getAll() {
         return cookieStore.getAll();
       },
-      setAll() {},
+      setAll(cookiesToSet) {
+        try {
+          cookiesToSet.forEach(({ name, value, options }) =>
+            cookieStore.set(name, value, options),
+          );
+        } catch {
+          // Server Components cannot always mutate cookies. Route handlers and
+          // Server Actions still receive refreshed auth cookies through this hook.
+        }
+      },
     },
   });
 }

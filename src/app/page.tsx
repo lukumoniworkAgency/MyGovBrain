@@ -1,37 +1,86 @@
-import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import type { Metadata } from "next";
+import { SiteShell } from "@/components/site-shell";
+import { getCategories } from "@/lib/data";
+import { getPageLanguage } from "@/lib/language";
+import { HeroSection } from "@/components/home/hero-section";
+import { SearchBand } from "@/components/home/search-band";
+import { CategoriesSection } from "@/components/home/categories-section";
+import { PopularServicesSection } from "@/components/home/popular-services-section";
+import { CscSection } from "@/components/home/csc-section";
+import { AiSection } from "@/components/home/ai-section";
+import { TrackingSection } from "@/components/home/tracking-section";
+import { VaultSection } from "@/components/home/vault-section";
+import { JobsSection } from "@/components/home/jobs-section";
+import { WhyHowSection } from "@/components/home/why-how-section";
+import {
+  NewsletterSection,
+  SocialSection,
+} from "@/components/home/social-sections";
+import { AppSection, CtaSection } from "@/components/home/closing-sections";
+import { organizationSchema } from "@/config/home";
 
-export default async function Home() {
-  const supabase = await createSupabaseServerClient();
-  const { count, error } = supabase
-    ? await supabase.from("languages").select("id", { count: "exact", head: true })
-    : { count: null, error: new Error("Supabase environment variables are not configured") };
+export const metadata: Metadata = {
+  title: "GovGuide AI — One Platform For All Citizen Services",
+  description:
+    "Save Time. Save Money. Reduce Paperwork. Find government services, CSC centers, jobs, scholarships, AI guidance, tracking, and document checklists.",
+  keywords: [
+    "government services",
+    "CSC",
+    "PAN card",
+    "Aadhaar",
+    "scholarship",
+    "government jobs",
+    "income certificate",
+  ],
+  openGraph: {
+    title: "GovGuide AI — One Platform For All Citizen Services",
+    description:
+      "Save Time. Save Money. Reduce Paperwork. Guidance, CSC centers, jobs, AI help, tracking & documents.",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "GovGuide AI — One Platform For All Citizen Services",
+    description: "Save Time. Save Money. Reduce Paperwork.",
+  },
+};
+
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<{ lang?: string }>;
+}) {
+  const params = await searchParams;
+  const [{ languages, languageCode }, categoriesResult] = await Promise.all([
+    getPageLanguage(params.lang),
+    getCategories(),
+  ]);
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-5xl items-center px-6 py-12">
-      <Card className="w-full border-teal-900/10 bg-white/90 p-8 sm:p-12">
-        <div className="flex flex-col gap-8">
-          <div className="flex items-center justify-between gap-4">
-            <Badge>Foundation check</Badge>
-            <span className="text-sm text-slate-500">Week 1</span>
-          </div>
-          <div className="max-w-2xl space-y-4">
-            <h1 className="text-4xl font-semibold tracking-tight text-slate-900 sm:text-5xl">Infrastructure is ready.</h1>
-            <p className="text-lg leading-8 text-slate-500">This placeholder verifies that the application can reach its database layer without embedding domain records in the codebase.</p>
-          </div>
-          <div className="grid gap-4 border-t border-slate-200 pt-6 sm:grid-cols-2">
-            <div>
-              <p className="text-sm text-slate-500">Database connection</p>
-              <p className="mt-1 font-medium text-slate-900">{error ? "Configuration required" : "Connected"}</p>
-            </div>
-            <div>
-              <p className="text-sm text-slate-500">Language records</p>
-              <p className="mt-1 font-medium text-slate-900">{error ? "Unavailable" : (count ?? 0)}</p>
-            </div>
-          </div>
-        </div>
-      </Card>
-    </main>
+    <SiteShell languages={languages} languageCode={languageCode}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+      />
+      <main id="main-content">
+        <HeroSection languageCode={languageCode} />
+        <SearchBand languageCode={languageCode} />
+        <CategoriesSection
+          categories={categoriesResult.data}
+          languageCode={languageCode}
+        />
+        <CscSection languageCode={languageCode} />
+        <PopularServicesSection languageCode={languageCode} />
+        <AiSection />
+        <TrackingSection languageCode={languageCode} />
+        <VaultSection languageCode={languageCode} />
+        <JobsSection languageCode={languageCode} />
+        <WhyHowSection languageCode={languageCode} />
+        <SocialSection />
+        <AppSection languageCode={languageCode} />
+        <NewsletterSection />
+        <CtaSection languageCode={languageCode} />
+      </main>
+    </SiteShell>
   );
 }

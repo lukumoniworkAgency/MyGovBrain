@@ -30,8 +30,22 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files (never commit credentials)
 .env*
+!.env.example
+
+# local development artifacts
+*.log
+*.docx
+*.py
+__pycache__/
+tsc-out.txt
+npm.ps1
+
+# local supabase scripts and temporary files
+_enc_probe.sql
+_encprobe.txt
+seed10_skeleton.txt
 
 # vercel
 .vercel
@@ -42,3 +56,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# AI cache and ML models
+ai-cache/
+ml-model-cache/
+*.pt
+*.bin

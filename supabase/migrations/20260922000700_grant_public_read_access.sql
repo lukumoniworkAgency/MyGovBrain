@@ -1,0 +1,10 @@
+grant select on public.languages to anon, authenticated;
+grant select on public.states to anon, authenticated;
+grant select on public.districts to anon, authenticated;
+grant select on public.departments to anon, authenticated;
+grant select on public.service_categories to anon, authenticated;
+grant select on public.services to anon, authenticated;
+grant select on public.service_translations to anon, authenticated;
+grant select on public.document_types to anon, authenticated;
+grant select on public.service_documents to anon, authenticated;
+grant select on public.service_sources to anon, authenticated;
