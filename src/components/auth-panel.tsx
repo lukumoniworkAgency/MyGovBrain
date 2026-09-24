@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
+import { Eye, EyeOff } from "lucide-react";
 
 type AuthMode = "signin" | "signup" | "reset-password" | "update-password";
 
@@ -64,6 +65,8 @@ export function AuthPanel({
   const [mode, setMode] = useState<AuthMode>(initialMode ?? "signin");
   const [formEmail, setFormEmail] = useState(email ?? "");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState<"success" | "error" | "info">(
@@ -332,32 +335,69 @@ export function AuthPanel({
               <span className="text-sm font-medium text-slate-700">
                 {mode === "update-password" ? "New password" : "Password"}
               </span>
-              <input
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="min-h-11 w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 outline-none placeholder:text-slate-500 focus:border-teal-700 focus:ring-2 focus:ring-teal-700/20"
-                placeholder={`At least ${PASSWORD_MIN_LENGTH} characters`}
-                autoComplete={
-                  mode === "signin" ? "current-password" : "new-password"
-                }
-              />
+              <span className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="min-h-11 w-full rounded-md border border-slate-300 px-3 py-2 pr-12 text-sm text-slate-900 outline-none placeholder:text-slate-500 focus:border-teal-700 focus:ring-2 focus:ring-teal-700/20"
+                  placeholder={`At least ${PASSWORD_MIN_LENGTH} characters`}
+                  autoComplete={
+                    mode === "signin" ? "current-password" : "new-password"
+                  }
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((visible) => !visible)}
+                  className="absolute inset-y-0 right-0 flex min-w-11 items-center justify-center text-slate-500 hover:text-teal-800 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-teal-700"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  aria-pressed={showPassword}
+                >
+                  {showPassword ? (
+                    <EyeOff aria-hidden="true" className="size-4" />
+                  ) : (
+                    <Eye aria-hidden="true" className="size-4" />
+                  )}
+                </button>
+              </span>
             </label>
             {isPasswordMode && (
               <label className="flex flex-col gap-1.5">
                 <span className="text-sm font-medium text-slate-700">
                   Confirm password
                 </span>
-                <input
-                  type="password"
-                  required
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="min-h-11 w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 outline-none placeholder:text-slate-500 focus:border-teal-700 focus:ring-2 focus:ring-teal-700/20"
-                  placeholder="Repeat your password"
-                  autoComplete="new-password"
-                />
+                <span className="relative">
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    required
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="min-h-11 w-full rounded-md border border-slate-300 px-3 py-2 pr-12 text-sm text-slate-900 outline-none placeholder:text-slate-500 focus:border-teal-700 focus:ring-2 focus:ring-teal-700/20"
+                    placeholder="Repeat your password"
+                    autoComplete="new-password"
+                    aria-label="Confirm password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setShowConfirmPassword((visible) => !visible)
+                    }
+                    className="absolute inset-y-0 right-0 flex min-w-11 items-center justify-center text-slate-500 hover:text-teal-800 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-teal-700"
+                    aria-label={
+                      showConfirmPassword
+                        ? "Hide confirm password"
+                        : "Show confirm password"
+                    }
+                    aria-pressed={showConfirmPassword}
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff aria-hidden="true" className="size-4" />
+                    ) : (
+                      <Eye aria-hidden="true" className="size-4" />
+                    )}
+                  </button>
+                </span>
               </label>
             )}
             {mode === "signin" && (
