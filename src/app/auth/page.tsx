@@ -36,7 +36,11 @@ export default async function AuthPage({
             and try again.
           </p>
         )}
-        <AuthPanel nextPath={nextPath} initialMode={initialMode} />
+        <AuthPanel
+          nextPath={nextPath}
+          initialMode={initialMode}
+          passwordOnly={params.mode === "password"}
+        />
       </main>
     </SiteShell>
   );

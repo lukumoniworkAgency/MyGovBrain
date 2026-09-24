@@ -62,3 +62,6 @@ ai-cache/
 ml-model-cache/
 *.pt
 *.bin
+
+.vercel
+.env*

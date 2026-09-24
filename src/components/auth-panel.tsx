@@ -10,6 +10,8 @@ interface AuthPanelProps {
   nextPath: string;
   /** Initial tab. Pass "update-password" when arriving from a recovery link. */
   initialMode?: AuthMode;
+  /** Hide the email-link fallback for the direct password-only entry point. */
+  passwordOnly?: boolean;
 }
 
 const PASSWORD_MIN_LENGTH = 8;
@@ -39,7 +41,11 @@ const modeCopy: Record<
   },
 };
 
-export function AuthPanel({ nextPath, initialMode }: AuthPanelProps) {
+export function AuthPanel({
+  nextPath,
+  initialMode,
+  passwordOnly = false,
+}: AuthPanelProps) {
   const {
     user,
     email,
@@ -375,7 +381,7 @@ export function AuthPanel({ nextPath, initialMode }: AuthPanelProps) {
         </Button>
       </form>
 
-      {(mode === "signin" || mode === "signup") && (
+      {(mode === "signin" || mode === "signup") && !passwordOnly && (
         <div className="mt-4">
           <div className="relative my-4 text-center">
             <span className="relative z-10 bg-white px-2 text-xs tracking-wide text-slate-500 uppercase">
