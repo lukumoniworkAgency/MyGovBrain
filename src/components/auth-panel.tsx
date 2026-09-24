@@ -64,6 +64,7 @@ export function AuthPanel({
 
   const [mode, setMode] = useState<AuthMode>(initialMode ?? "signin");
   const [formEmail, setFormEmail] = useState(email ?? "");
+  const [fullName, setFullName] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -123,14 +124,18 @@ export function AuthPanel({
       if (mode === "signup") {
         const emailError = validateEmail();
         if (emailError) return setStatusMessage(emailError, "error");
+        if (fullName.trim().length < 2 || fullName.trim().length > 120)
+          return setStatusMessage("Please enter your full name", "error");
         const passwordError = validatePasswords();
         if (passwordError) return setStatusMessage(passwordError, "error");
 
         setSubmitting(true);
-        const result =
-          nextPath === "/my-services"
-            ? await signUpWithPassword(formEmail, password)
-            : await signUpWithPassword(formEmail, password, nextPath);
+        const result = await signUpWithPassword(
+          formEmail,
+          password,
+          fullName,
+          nextPath === "/my-services" ? undefined : nextPath,
+        );
         if (result.error) {
           setStatusMessage(result.error, "error");
         } else {
@@ -326,6 +331,25 @@ export function AuthPanel({
               className="min-h-11 w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 outline-none placeholder:text-slate-500 focus:border-teal-700 focus:ring-2 focus:ring-teal-700/20"
               placeholder="you@example.com"
               autoComplete="email"
+            />
+          </label>
+        )}
+        {mode === "signup" && (
+          <label className="flex flex-col gap-1.5">
+            <span className="text-sm font-medium text-slate-700">
+              Full name
+            </span>
+            <input
+              type="text"
+              required
+              minLength={2}
+              maxLength={120}
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              className="min-h-11 w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 outline-none placeholder:text-slate-500 focus:border-teal-700 focus:ring-2 focus:ring-teal-700/20"
+              placeholder="Enter your full name"
+              autoComplete="name"
+              aria-label="Full name"
             />
           </label>
         )}

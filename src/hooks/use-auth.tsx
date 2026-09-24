@@ -36,6 +36,7 @@ interface AuthContextValue {
   signUpWithPassword: (
     email: string,
     password: string,
+    fullName?: string,
     redirectTo?: string,
   ) => Promise<{ error?: string; needsConfirmation?: boolean }>;
   updatePassword: (newPassword: string) => Promise<{ error?: string }>;
@@ -238,6 +239,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signUpWithPassword = async (
     email: string,
     password: string,
+    fullName?: string,
     redirectTo?: string,
   ): Promise<{ error?: string; needsConfirmation?: boolean }> => {
     if (!supabase) return { error: "Authentication is not configured" };
@@ -256,6 +258,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         email,
         password,
         options: {
+          data: { full_name: fullName?.trim() || undefined },
           emailRedirectTo: `${origin}/auth/callback?next=${encodeURIComponent(nextPath)}`,
         },
       });

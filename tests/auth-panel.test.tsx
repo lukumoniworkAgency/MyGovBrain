@@ -1,6 +1,12 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { AuthPanel } from "@/components/auth-panel";
 
 const authMock = {
@@ -41,23 +47,35 @@ afterEach(() => {
 });
 
 function fillSignin(email: string, password: string) {
-  fireEvent.change(screen.getByLabelText("Email address"), { target: { value: email } });
-  fireEvent.change(screen.getByLabelText("Password"), { target: { value: password } });
+  fireEvent.change(screen.getByLabelText("Email address"), {
+    target: { value: email },
+  });
+  fireEvent.change(screen.getByLabelText("Password"), {
+    target: { value: password },
+  });
 }
 
 describe("AuthPanel", () => {
   it("sign-in tab shows the password form and submits credentials", async () => {
     render(<AuthPanel nextPath="/my-services" />);
 
-    expect(screen.getByRole("tab", { name: "Sign in" })).toHaveAttribute("aria-selected", "true");
-    expect(screen.getByRole("heading", { name: "Sign in" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Sign in" })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
+    expect(
+      screen.getByRole("heading", { name: "Sign in" }),
+    ).toBeInTheDocument();
     expect(screen.getByLabelText("Password")).toBeInTheDocument();
 
     fillSignin("user@example.com", "secret123");
     fireEvent.click(screen.getByRole("button", { name: "Sign in" }));
 
     await waitFor(() =>
-      expect(authMock.signInWithPassword).toHaveBeenCalledWith("user@example.com", "secret123")
+      expect(authMock.signInWithPassword).toHaveBeenCalledWith(
+        "user@example.com",
+        "secret123",
+      ),
     );
     const status = await screen.findByRole("status");
     expect(status).toHaveTextContent("You are signed in");
@@ -67,9 +85,18 @@ describe("AuthPanel", () => {
     render(<AuthPanel nextPath="/my-services" />);
     fireEvent.click(screen.getByRole("tab", { name: "Create account" }));
 
-    fireEvent.change(screen.getByLabelText("Email address"), { target: { value: "a@b.com" } });
-    fireEvent.change(screen.getByLabelText("Password"), { target: { value: "password1" } });
-    fireEvent.change(screen.getByLabelText("Confirm password"), { target: { value: "password2" } });
+    fireEvent.change(screen.getByLabelText("Full name"), {
+      target: { value: "Test Citizen" },
+    });
+    fireEvent.change(screen.getByLabelText("Email address"), {
+      target: { value: "a@b.com" },
+    });
+    fireEvent.change(screen.getByLabelText("Password"), {
+      target: { value: "password1" },
+    });
+    fireEvent.change(screen.getByLabelText("Confirm password"), {
+      target: { value: "password2" },
+    });
     fireEvent.click(screen.getByRole("button", { name: "Create account" }));
 
     const alert = screen.getByRole("alert");
@@ -81,20 +108,38 @@ describe("AuthPanel", () => {
     render(<AuthPanel nextPath="/my-services" />);
     fireEvent.click(screen.getByRole("tab", { name: "Create account" }));
 
-    fireEvent.change(screen.getByLabelText("Email address"), { target: { value: "new@example.com" } });
-    fireEvent.change(screen.getByLabelText("Password"), { target: { value: "password1" } });
-    fireEvent.change(screen.getByLabelText("Confirm password"), { target: { value: "password1" } });
+    fireEvent.change(screen.getByLabelText("Full name"), {
+      target: { value: "Test Citizen" },
+    });
+    fireEvent.change(screen.getByLabelText("Email address"), {
+      target: { value: "new@example.com" },
+    });
+    fireEvent.change(screen.getByLabelText("Password"), {
+      target: { value: "password1" },
+    });
+    fireEvent.change(screen.getByLabelText("Confirm password"), {
+      target: { value: "password1" },
+    });
     fireEvent.click(screen.getByRole("button", { name: "Create account" }));
 
     await waitFor(() =>
-      expect(authMock.signUpWithPassword).toHaveBeenCalledWith("new@example.com", "password1")
+      expect(authMock.signUpWithPassword).toHaveBeenCalledWith(
+        "new@example.com",
+        "password1",
+        "Test Citizen",
+        undefined,
+      ),
     );
     const status = await screen.findByRole("status");
-    expect(status).toHaveTextContent("Check your email to confirm your account");
+    expect(status).toHaveTextContent(
+      "Check your email to confirm your account",
+    );
   });
 
   it("surfaces server errors from sign-in", async () => {
-    authMock.signInWithPassword.mockResolvedValue({ error: "Invalid login credentials" });
+    authMock.signInWithPassword.mockResolvedValue({
+      error: "Invalid login credentials",
+    });
     render(<AuthPanel nextPath="/my-services" />);
 
     fillSignin("user@example.com", "wrongpass");
@@ -108,41 +153,67 @@ describe("AuthPanel", () => {
     render(<AuthPanel nextPath="/my-services" />);
     fireEvent.click(screen.getByRole("tab", { name: "Reset password" }));
 
-    fireEvent.change(screen.getByLabelText("Email address"), { target: { value: "reset@example.com" } });
+    fireEvent.change(screen.getByLabelText("Email address"), {
+      target: { value: "reset@example.com" },
+    });
     fireEvent.click(screen.getByRole("button", { name: "Send reset link" }));
 
     await waitFor(() =>
-      expect(authMock.resetPasswordForEmail).toHaveBeenCalledWith("reset@example.com", "/my-services")
+      expect(authMock.resetPasswordForEmail).toHaveBeenCalledWith(
+        "reset@example.com",
+        "/my-services",
+      ),
     );
     const status = await screen.findByRole("status");
-    expect(status).toHaveTextContent("Check your email for the password reset link");
+    expect(status).toHaveTextContent(
+      "Check your email for the password reset link",
+    );
   });
 
   it("update-password mode renders the set-new-password form without tabs", async () => {
     render(<AuthPanel nextPath="/my-services" initialMode="update-password" />);
 
-    expect(screen.getByRole("heading", { name: "Set a new password" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Set a new password" }),
+    ).toBeInTheDocument();
     expect(screen.queryByRole("tablist")).not.toBeInTheDocument();
     expect(screen.getByLabelText("New password")).toBeInTheDocument();
     expect(screen.getByLabelText("Confirm password")).toBeInTheDocument();
 
-    fireEvent.change(screen.getByLabelText("New password"), { target: { value: "newpassword1" } });
-    fireEvent.change(screen.getByLabelText("Confirm password"), { target: { value: "newpassword1" } });
+    fireEvent.change(screen.getByLabelText("New password"), {
+      target: { value: "newpassword1" },
+    });
+    fireEvent.change(screen.getByLabelText("Confirm password"), {
+      target: { value: "newpassword1" },
+    });
     fireEvent.click(screen.getByRole("button", { name: "Update password" }));
 
-    await waitFor(() => expect(authMock.updatePassword).toHaveBeenCalledWith("newpassword1"));
-    expect(await screen.findByRole("status")).toHaveTextContent("Password updated");
+    await waitFor(() =>
+      expect(authMock.updatePassword).toHaveBeenCalledWith("newpassword1"),
+    );
+    expect(await screen.findByRole("status")).toHaveTextContent(
+      "Password updated",
+    );
     // Returns to the sign-in tab after success
-    expect(await screen.findByRole("heading", { name: "Sign in" })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("heading", { name: "Sign in" }),
+    ).toBeInTheDocument();
   });
 
   it("offers the email-link fallback on the sign-in tab", async () => {
     render(<AuthPanel nextPath="/my-services" />);
-    fireEvent.change(screen.getByLabelText("Email address"), { target: { value: "link@example.com" } });
-    fireEvent.click(screen.getByRole("button", { name: "Email me a sign-in link instead" }));
+    fireEvent.change(screen.getByLabelText("Email address"), {
+      target: { value: "link@example.com" },
+    });
+    fireEvent.click(
+      screen.getByRole("button", { name: "Email me a sign-in link instead" }),
+    );
 
     await waitFor(() =>
-      expect(authMock.signInWithEmail).toHaveBeenCalledWith("link@example.com", "/my-services")
+      expect(authMock.signInWithEmail).toHaveBeenCalledWith(
+        "link@example.com",
+        "/my-services",
+      ),
     );
   });
 
@@ -152,7 +223,10 @@ describe("AuthPanel", () => {
 
     expect(screen.getByText("Signed in as")).toBeInTheDocument();
     expect(screen.getByText("user@example.com")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Continue" })).toHaveAttribute("href", "/my-services");
+    expect(screen.getByRole("link", { name: "Continue" })).toHaveAttribute(
+      "href",
+      "/my-services",
+    );
 
     fireEvent.click(screen.getByRole("button", { name: "Sign out" }));
     await waitFor(() => expect(authMock.signOut).toHaveBeenCalledTimes(1));
@@ -162,12 +236,23 @@ describe("AuthPanel", () => {
     render(<AuthPanel nextPath="/my-services" />);
     fireEvent.click(screen.getByRole("tab", { name: "Create account" }));
 
-    fireEvent.change(screen.getByLabelText("Email address"), { target: { value: "a@b.com" } });
-    fireEvent.change(screen.getByLabelText("Password"), { target: { value: "short" } });
-    fireEvent.change(screen.getByLabelText("Confirm password"), { target: { value: "short" } });
+    fireEvent.change(screen.getByLabelText("Full name"), {
+      target: { value: "Test Citizen" },
+    });
+    fireEvent.change(screen.getByLabelText("Email address"), {
+      target: { value: "a@b.com" },
+    });
+    fireEvent.change(screen.getByLabelText("Password"), {
+      target: { value: "short" },
+    });
+    fireEvent.change(screen.getByLabelText("Confirm password"), {
+      target: { value: "short" },
+    });
     fireEvent.click(screen.getByRole("button", { name: "Create account" }));
 
-    expect(screen.getByRole("alert")).toHaveTextContent("Password must be at least 8 characters");
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "Password must be at least 8 characters",
+    );
     expect(authMock.signUpWithPassword).not.toHaveBeenCalled();
   });
 });
